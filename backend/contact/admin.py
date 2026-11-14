@@ -16,10 +16,10 @@ class ContactMessageAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    @admin.action(description="علامت‌گذاری به‌عنوان بررسی‌شده", permissions=["change"])
+    @admin.action(description="Mark selected messages as reviewed", permissions=["change"])
     def mark_read(self, request, queryset):
         queryset.update(is_read=True)
 
-    @admin.action(description="علامت‌گذاری به‌عنوان بررسی‌نشده", permissions=["change"])
+    @admin.action(description="Mark selected messages as unreviewed", permissions=["change"])
     def mark_unread(self, request, queryset):
         queryset.update(is_read=False)

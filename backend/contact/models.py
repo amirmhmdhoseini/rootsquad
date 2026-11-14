@@ -2,16 +2,16 @@ from django.db import models
 
 
 class ContactMessage(models.Model):
-    name = models.CharField("نام", max_length=120)
-    email = models.EmailField("ایمیل", max_length=254)
-    project = models.TextField("شرح پروژه", max_length=5000)
-    created_at = models.DateTimeField("زمان دریافت", auto_now_add=True, db_index=True)
-    is_read = models.BooleanField("بررسی‌شده", default=False, db_index=True)
+    name = models.CharField("Name", max_length=120)
+    email = models.EmailField("Email", max_length=254)
+    project = models.TextField("Project description", max_length=5000)
+    created_at = models.DateTimeField("Received at", auto_now_add=True, db_index=True)
+    is_read = models.BooleanField("Reviewed", default=False, db_index=True)
 
     class Meta:
         ordering = ["-created_at", "-pk"]
-        verbose_name = "پیام تماس"
-        verbose_name_plural = "پیام‌های تماس"
+        verbose_name = "contact message"
+        verbose_name_plural = "contact messages"
 
     def __str__(self):
         return self.name
