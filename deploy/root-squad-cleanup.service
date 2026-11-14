@@ -1,0 +1,17 @@
+[Unit]
+Description=Remove expired Root Squad submission counters
+After=network.target
+
+[Service]
+Type=oneshot
+User=rootsquad
+Group=www-data
+WorkingDirectory=/srv/root-squad/root-squad-vue/backend
+EnvironmentFile=/etc/root-squad.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.production
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/srv/root-squad/root-squad-vue/backend/venv/bin/python manage.py cleanup_contact_limits
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict

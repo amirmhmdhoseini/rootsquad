@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily cleanup of expired Root Squad submission counters
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=300
+Unit=root-squad-cleanup.service
+
+[Install]
+WantedBy=timers.target

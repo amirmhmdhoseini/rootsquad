@@ -1,0 +1,5 @@
+-r requirements.txt
+# Require the current security patch for a new production installation.
+Django>=5.2.19,<5.3
+gunicorn>=23.0,<26
+psycopg[binary]>=3.2,<4
