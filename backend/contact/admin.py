@@ -9,7 +9,6 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_filter = ["is_read", "created_at"]
     search_fields = ["name", "email", "project"]
     readonly_fields = ["name", "email", "project", "created_at"]
-    date_hierarchy = "created_at"
     actions = ["mark_read", "mark_unread"]
     list_per_page = 25
 
