@@ -1086,3 +1086,47 @@ html[dir="rtl"] .service-no { right: auto; left: 22px; }
     radial-gradient(ellipse 58% 62% at 72% 48%, rgba(57,255,136,.045), transparent 72%);
 }
 #projectList h3, #projectList p { text-shadow: 0 2px 14px rgba(0,0,0,.9), 0 0 3px rgba(0,0,0,.7); }
+
+/* Keep the brand, navigation and language picker on one header baseline. */
+.bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  direction: rtl;
+}
+.bar svg.brand-logo {
+  grid-column: 1;
+  grid-row: 1;
+  width: 40px;
+  height: 46px;
+  overflow: hidden;
+}
+.bar .rail {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  transform: none;
+  direction: inherit;
+}
+.bar .lang-switch {
+  position: static;
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  direction: ltr;
+}
+html[dir="ltr"] .bar .rail { direction: ltr; }
+@media (max-width: 760px) {
+  .bar { padding-inline: 12px; column-gap: 8px; row-gap: 8px; }
+  .bar svg.brand-logo { width: 31px; height: 36px; }
+  .bar .rail {
+    justify-self: stretch;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bar .rail::-webkit-scrollbar { display: none; }
+  .bar .rail a { flex: none; }
+  .bar .lang-switch button { min-width: 26px; padding-inline: 3px; }
+}

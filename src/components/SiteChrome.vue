@@ -1,10 +1,9 @@
 <template>
   <header class="bar">
-    <svg class="brand-logo" role="img" aria-label="Root Squad" >
-      <use href="#root-squad-logo"></use>
+    <svg class="brand-logo" viewBox="92 100 447 515" role="img" aria-label="Root Squad" overflow="hidden">
+      <image href="/brand-green-white.png" width="1270" height="715" />
     </svg>
-    <!-- <span class="tag" data-i18n="brandTag">وب · طراحی · توسعه</span> -->
-  </header>
+
 
   <div class="lang-switch" role="group" aria-label="انتخاب زبان">
     <button type="button" data-lang="fa" aria-pressed="true">FA</button>
@@ -19,6 +18,7 @@
     <a href="#team" data-i="3"><span data-i18n="navTeam">تیم ما</span></a>
     <a href="#contact" data-i="4"><span data-i18n="navContact">تماس</span></a>
   </nav>
+  </header>
 
   <div class="marquee" aria-hidden="true">
     <div class="track">
