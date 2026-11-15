@@ -19,29 +19,73 @@ if not ALLOWED_HOSTS or any("*" in host or "/" in host or any(c.isspace() for c 
 try:
     url = urlsplit(os.environ.get("DATABASE_URL", ""))
     options = parse_qs(url.query, strict_parsing=True)
+
     if (
-        url.scheme not in ("postgres", "postgresql") or not url.hostname
-        or not url.username or not url.path.strip("/") or url.fragment
-        or set(options) - {"sslmode"} or any(len(values) != 1 for values in options.values())
+        not url.hostname
+        or not url.username
+        or url.password is None
+        or not url.path.strip("/")
+        or url.fragment
+        or any(len(values) != 1 for values in options.values())
     ):
         raise ValueError
-    sslmode = options.get("sslmode", ["require"])[0]
-    if sslmode not in ("disable", "allow", "prefer", "require", "verify-ca", "verify-full"):
-        raise ValueError
-    DATABASES = {"default": {
-        "ENGINE": "django.db.backends.postgresql",
+
+    db_config = {
         "NAME": unquote(url.path.lstrip("/")),
         "USER": unquote(url.username),
-        "PASSWORD": unquote(url.password or ""),
+        "PASSWORD": unquote(url.password),
         "HOST": url.hostname,
-        "PORT": url.port or 5432,
         "CONN_MAX_AGE": 60,
         "CONN_HEALTH_CHECKS": True,
-        "OPTIONS": {"sslmode": sslmode, "connect_timeout": 5},
-    }}
-except ValueError:
-    raise ImproperlyConfigured("DATABASE_URL must be a valid PostgreSQL URL; only the sslmode query option is supported.") from None
+    }
 
+    if url.scheme in ("postgres", "postgresql"):
+        if set(options) - {"sslmode"}:
+            raise ValueError
+
+        sslmode = options.get("sslmode", ["require"])[0]
+        if sslmode not in (
+            "disable", "allow", "prefer",
+            "require", "verify-ca", "verify-full"
+        ):
+            raise ValueError
+
+        DATABASES = {
+            "default": {
+                **db_config,
+                "ENGINE": "django.db.backends.postgresql",
+                "PORT": url.port or 5432,
+                "OPTIONS": {
+                    "sslmode": sslmode,
+                    "connect_timeout": 5,
+                },
+            }
+        }
+
+    elif url.scheme == "mysql":
+        if options:
+            raise ValueError
+
+        DATABASES = {
+            "default": {
+                **db_config,
+                "ENGINE": "django.db.backends.mysql",
+                "PORT": url.port or 3306,
+                "OPTIONS": {
+                    "charset": "utf8mb4",
+                    "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+                    "connect_timeout": 5,
+                },
+            }
+        }
+
+    else:
+        raise ValueError
+
+except (ValueError, TypeError):
+    raise ImproperlyConfigured(
+        "DATABASE_URL must be a valid PostgreSQL or MySQL URL."
+    ) from None
 CSRF_TRUSTED_ORIGINS = []  # Same-origin frontend; no cross-origin API permissions.
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
