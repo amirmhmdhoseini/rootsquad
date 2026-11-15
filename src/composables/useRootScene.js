@@ -193,7 +193,7 @@ function loadProjectShots() {
   var loader = new THREE.TextureLoader();
   PROJ_SHOTS.forEach(function (list, pi) {
     list.forEach(function (name, k) {
-      loader.load(base + 'projects/' + name + '.webp', function (tex) { tex.anisotropy = 8; tex.colorSpace = THREE.SRGBColorSpace; shotTex[pi][k] = tex; });
+      loader.load(base + 'projects/' + name + '.webp', function (tex) { tex.anisotropy = 8; tex.encoding = THREE.sRGBEncoding; shotTex[pi][k] = tex; });
     });
   });
 }
