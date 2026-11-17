@@ -29,7 +29,7 @@ const subs = [
     <div class="panel showcase-panel services-panel">
       <div class="section-heading">
         <p class="eyebrow" data-i18n="servicesEyebrow">01 / خدمات</p>
-        <h2 data-i18n="servicesTitle">چه راهکاری برای کسب‌وکار شما می‌سازیم؟</h2>
+        <h2 data-i18n="servicesTitle">خدمات طراحی سایت و نرم‌افزار برای کسب‌وکار شما</h2>
         <p data-i18n="servicesLead">از طراحی حضور حرفه‌ای شما در وب تا سامان‌دهی اطلاعات و فرایندها، راهکار را بر اساس نیاز واقعی پروژه و متناسب با هدف و بودجهٔ شما انتخاب می‌کنیم.</p>
       </div>
 

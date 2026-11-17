@@ -7,6 +7,7 @@
         <!-- <p class="hero-kicker" data-i18n="heroKicker">طراحی سایت، نرم‌افزار و راهکارهای داده‌محور</p> -->
         <h1 class="hero-wordmark" data-no-split aria-label="Root Squad — طراحی و توسعهٔ تجربه‌های دیجیتال">
           <span>ROOT</span><span>SQUAD</span>
+          <small class="sr-only" data-i18n="heroH1">طراحی سایت و نرم‌افزار اختصاصی</small>
         </h1>
         <div class="hero-axis" aria-hidden="true">
           <span data-i18n="webSystems">سیستم‌های وب</span><i></i><span data-i18n="creativeEngineering">مهندسی خلاق</span>

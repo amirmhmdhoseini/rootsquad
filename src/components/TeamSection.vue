@@ -7,7 +7,7 @@ const members = [1, 2, 3, 4]
     <div class="panel showcase-panel team-panel">
       <div class="section-heading">
         <p class="eyebrow" data-i18n="teamEyebrow">03 / تیم ما</p>
-        <h2 data-i18n="teamTitle">تیمی که پشت پروژهٔ شماست</h2>
+        <h2 data-i18n="teamTitle">تیم روت اسکواد؛ مهندسان پشت پروژهٔ شما</h2>
         <p data-i18n="teamLead">چهار مهندس کامپیوتر با تخصص‌های مکمل در توسعه، طراحی رابط کاربری و هماهنگی پروژه. با اعضای تیم و نقش هرکدام در اجرای پروژه‌ها آشنا شوید.</p>
       </div>
       <ol id="teamList" class="team-list hex-list">
