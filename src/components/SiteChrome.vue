@@ -11,7 +11,11 @@
     <button type="button" data-lang="en" aria-pressed="false">EN</button>
   </div>
 
-  <nav class="rail" aria-label="بخش‌های صفحه">
+  <button class="menu-toggle" type="button" aria-label="منو" aria-expanded="false" aria-controls="mainNav">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav id="mainNav" class="rail" aria-label="بخش‌های صفحه">
     <a href="#s0" data-i="0" aria-current="true"><span data-i18n="navHome">خانه</span></a>
     <a href="#services" data-i="1"><span data-i18n="navServices">خدمات</span></a>
     <a href="#work" data-i="2"><span data-i18n="navWork">نمونه‌کارها</span></a>

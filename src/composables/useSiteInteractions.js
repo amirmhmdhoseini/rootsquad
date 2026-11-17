@@ -327,6 +327,16 @@ var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var r = st.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid);
       if (d < bd) { bd = d; best = i; }
     });
+    if (window.innerWidth <= 760) {
+      // phones: sections are taller than the screen, so each one plays its entrance once, when it first comes into view
+      var vh = window.innerHeight;
+      stages.forEach(function (st) {
+        if (st.classList.contains('on')) return;
+        var r = st.getBoundingClientRect();
+        if (r.top < vh * 0.7 && r.bottom > vh * 0.1) st.classList.add('on');
+      });
+      return;
+    }
     if (best !== cur) {
       cur = best;
       stages.forEach(function (st, i) { st.classList.toggle('on', i === best); });
@@ -353,6 +363,20 @@ var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
     navFrame = requestAnimationFrame(tick);
   }
+  // hamburger menu (phones)
+  var menuBtn = document.querySelector('.menu-toggle');
+  function setMenu(open) {
+    document.body.classList.toggle('menu-open', open);
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  if (menuBtn) {
+    menuBtn.addEventListener('click', function (e) { e.stopPropagation(); setMenu(!document.body.classList.contains('menu-open')); });
+    document.addEventListener('click', function (e) {
+      if (document.body.classList.contains('menu-open') && !(e.target.closest && e.target.closest('.rail, .menu-toggle'))) setMenu(false);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', function () { if (window.innerWidth > 760) setMenu(false); });
+  }
   document.querySelectorAll('.rail a, .hero-cta').forEach(function (a) {
     a.addEventListener('click', function (e) {
       var id = a.getAttribute('href');
@@ -360,6 +384,7 @@ var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
+      setMenu(false);
       scrollToSection(target);
       try { history.replaceState(null, '', id); } catch (err) {}
     });

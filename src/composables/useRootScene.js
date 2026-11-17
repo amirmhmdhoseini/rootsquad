@@ -258,14 +258,14 @@ TEAM.forEach(function (T, i) {
   var ring = hexRing(R + 0.3, 0.018, 0.02, new THREE.MeshStandardMaterial({ color: 0x000000, emissive: col, emissiveIntensity: 0.9 }));
   var lblTex = labelTexture(T.name, T.role);
   var label = new THREE.Mesh(new THREE.PlaneGeometry(3.3, 0.86), new THREE.MeshBasicMaterial({ map: lblTex, transparent: true, depthWrite: false, toneMapped: false }));
-  label.position.set(0, -R - 0.72, 0.02);
+  label.position.set(0, -R - 0.72, 0.02); label.userData.i = i;
   var inner = new THREE.Group();
   inner.add(plate); inner.add(photo); inner.add(frame); inner.add(ring); inner.add(label);
   g.add(inner);
   g.position.set(0, TEAM_Y, 0);
   scene.add(g);
   var m = { g: g, inner: inner, halo: new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial()), badge: new THREE.Object3D(), ring: ring,
-            skin: new THREE.MeshStandardMaterial(), lift: 0, base: g.position.clone(), a: 0, i: i, photoMat: photoMat, lblTex: lblTex, T: T, plate: plate };
+            skin: new THREE.MeshStandardMaterial(), label: label, lift: 0, base: g.position.clone(), a: 0, i: i, photoMat: photoMat, lblTex: lblTex, T: T, plate: plate };
   members.push(m);
   if (T.photo) {
     var img = new Image();
@@ -361,10 +361,11 @@ bindList('#teamList', function (i) { hoverMember = i; });
 bindList('#projectList', function (i) { hoverLeaf = i; });
 
 /* team hexagons: hover and click straight on the 3D photos -> opens the same detail popup */
-var hexRay = new THREE.Raycaster(), hexNdc = new THREE.Vector2(), hexPlates = members.map(function (m) { return m.plate; }), hexOver = -1;
+var hexRay = new THREE.Raycaster(), hexNdc = new THREE.Vector2(), hexPlates = members.map(function (m) { return m.plate; }).concat(members.map(function (m) { return m.label; })), hexOver = -1;
 function pickHex(e) {
-  if (Math.abs(sCur - 3) > 0.3 || document.body.classList.contains('modal-open')) return -1;
-  if (e.target && e.target.closest && e.target.closest('button, a, input, textarea, label, .lang-switch, .rail, .detail-modal')) return -1;
+  var mobileView = window.innerWidth <= 760;
+  if (Math.abs(sCur - 3) > (mobileView ? 0.55 : 0.3) || document.body.classList.contains('modal-open')) return -1;
+  if (e.target && e.target.closest && e.target.closest('button, a, input, textarea, label, .lang-switch, .rail, .menu-toggle, .detail-modal')) return -1;
   hexNdc.set(e.clientX / window.innerWidth * 2 - 1, -(e.clientY / window.innerHeight * 2 - 1));
   hexRay.setFromCamera(hexNdc, camera);
   var hit = hexRay.intersectObjects(hexPlates, false);
@@ -377,10 +378,27 @@ window.addEventListener('pointermove', function (e) {
   var cur = document.getElementById('cur'); if (cur) cur.classList.toggle('big', i >= 0);
   document.body.style.cursor = i >= 0 ? 'pointer' : '';
 }, { passive: true });
-window.addEventListener('click', function (e) {
-  var i = pickHex(e); if (i < 0) return;
+function openMember(i) {
   var b = document.querySelector('#teamList button[data-h="' + i + '"]'); if (b) b.click();
+}
+window.addEventListener('click', function (e) {
+  if (e.pointerType === 'touch' || e.detail === 0) return;   // touch taps are handled below
+  var i = pickHex(e); if (i >= 0) openMember(i);
 });
+// touch: a short tap without movement opens the member popup (click on a bare canvas area is unreliable on phones)
+var tapStart = null;
+window.addEventListener('pointerdown', function (e) {
+  tapStart = e.pointerType === 'touch' ? { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId } : null;
+}, { passive: true });
+window.addEventListener('pointercancel', function () { tapStart = null; }, { passive: true });
+window.addEventListener('pointerup', function (e) {
+  var st = tapStart; tapStart = null;
+  if (!st || e.pointerType !== 'touch' || st.id !== e.pointerId) return;
+  if (Math.hypot(e.clientX - st.x, e.clientY - st.y) > 12 || performance.now() - st.t > 600) return;
+  var i = pickHex(e); if (i < 0) return;
+  hoverMember = i; setTimeout(function () { hoverMember = -1; }, 400);
+  openMember(i);
+}, { passive: true });
 window.addEventListener('pointermove', function (e) {
   mouse.tx = (e.clientX / window.innerWidth - 0.5) * 2;
   mouse.ty = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -538,6 +556,7 @@ function animate(sCur, t) {
 
   // portfolio screens
   var a5 = d(2), e5 = ss(0, 0.75, a5);
+  crown.visible = !(window.innerWidth <= 760 && a5 < 0.04);
   leaves.forEach(function (L, i) {
     L.lift = lerp(L.lift, hoverLeaf === i ? 1 : 0, 0.12);
     var dim = hoverLeaf >= 0 && hoverLeaf !== i ? 0.6 : 1;
@@ -596,6 +615,16 @@ var railLinks = Array.prototype.slice.call(document.querySelectorAll('.rail a'))
 var gauge = document.getElementById('gauge'), gaugeFill = document.getElementById('gaugeFill');
 var sTarget = 0, sCur = 0, activeIdx = -1;
 function readScroll() {
+  if (window.innerWidth <= 760) {
+    // phones: sections are taller than the screen, so switch scenes only while a section boundary crosses the middle of the screen
+    var vh = window.innerHeight, mid = window.scrollY + vh * 0.5, W = vh * 0.22;
+    for (var k = 0; k < N - 1; k++) {
+      var bnd = (secs[k].offsetTop + secs[k].offsetHeight + secs[k + 1].offsetTop) / 2;   // middle of the gap between two sections
+      if (mid < bnd - W) { sTarget = k; return; }
+      if (mid <= bnd + W) { sTarget = k + ss(0, 1, (mid - (bnd - W)) / (2 * W)); return; }
+    }
+    sTarget = N - 1; return;
+  }
   var vc = window.scrollY + window.innerHeight * 0.5, c = secs.map(function (s) { return s.offsetTop + s.offsetHeight / 2; });
   if (vc <= c[0]) { sTarget = 0; return; }
   if (vc >= c[N - 1]) { sTarget = N - 1; return; }
